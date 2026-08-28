@@ -15,5 +15,7 @@ jobs:
         node-version: '24'
     - name: Install dependencies
       run: npm install
+    - name: Install ESLint as a development dependency
+      run: npm install eslint @eslint/js --save-dev
     - name: Check style
       run: npm run eslint
