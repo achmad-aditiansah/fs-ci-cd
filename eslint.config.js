@@ -46,7 +46,7 @@ module.exports = [
     }
   },
   {
-    files: ['tests/**/*.{js,jsx}'],
+    files: ['e2e-tests/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2018,
       sourceType: 'commonjs',
