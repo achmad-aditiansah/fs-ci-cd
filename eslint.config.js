@@ -35,8 +35,18 @@ module.exports = [
       'no-console': 0
     }
   },
-   {
+  {
     files: ['jest.setup.js'],
+    languageOptions: {
+      ecmaVersion: 2018,
+      sourceType: 'commonjs',
+      globals: {
+        ...globals.node
+      }
+    }
+  },
+  {
+    files: ['tests/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2018,
       sourceType: 'commonjs',
@@ -82,6 +92,16 @@ module.exports = [
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
       'no-console': 'error',
       'react/prop-types': 0
+    }
+  },
+  {
+    files: ['playwright.config.js'],
+    languageOptions: {
+      ecmaVersion: 2018,
+      sourceType: 'module',
+      globals: {
+        ...globals.node
+      }
     }
   }
 ]
