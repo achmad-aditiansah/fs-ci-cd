@@ -45,5 +45,16 @@ module.exports = {
     ],
     "no-console": "error",
     "react/prop-types": 0
-  }
+  },
+  "overrides": [
+    {
+      "files": ["jest.setup.js"],
+      "env": {
+        "node": true
+      },
+      "parserOptions": {
+        "sourceType": "script"
+      }
+    }
+  ]
 }
