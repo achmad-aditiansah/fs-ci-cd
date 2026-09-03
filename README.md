@@ -12,6 +12,10 @@ Start by running `npm install` inside the project folder
 `npm run build` to make a production build
 `npm run start-prod` to run your production build
 
+## CI/CD
+
+This project uses GitHub Actions for continuous integration.
+
 ## 🌐 Deployed Application
 
 The application is deployed on Render and can be accessed at:
