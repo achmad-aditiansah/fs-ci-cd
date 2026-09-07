@@ -16,6 +16,10 @@ Start by running `npm install` inside the project folder
 
 This project uses GitHub Actions for continuous integration.
 
+## Deployment test
+
+Testing normal deployment behavior.
+
 ## 🌐 Deployed Application
 
 The application is deployed on Render and can be accessed at:
