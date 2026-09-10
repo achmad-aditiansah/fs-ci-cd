@@ -53,11 +53,13 @@ jobs:
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
         status: success
+        content: "✅ **Deployment Successful!** A new version deployed to production"
         title: "Deployment Details"
+        noprefix: true
         description: |
-          **Commit:** ${{ github.sha }}
+          **Commit:** ${{ github.event.head_commit.id }}
           **Message:** ${{ github.event.head_commit.message }}
-          **Author:** ${{ github.actor }}
+          **Author:** ${{ github.event.head_commit.author.name }}
     
     - name: Failure
       if: ${{ needs.deployment_pipeline.result == 'failure' }}
@@ -65,18 +67,17 @@ jobs:
       with: 
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
         status: failure
+        content: "❌ **Build Failed!** The pipeline encountered an error"
         title: "Failure Details"
+        noprefix: true
         description: |
           **Repository:** ${{ github.repository }}
           **Branch:** ${{ github.ref_name }}
-          **Commit:** ${{ github.sha }}
+          **Commit:** ${{ github.event.head_commit.id }}
           **Message:** ${{ github.event.head_commit.message }}
-          **Author:** ${{ github.actor }}
+          **Author:** ${{ github.event.head_commit.author.name }}
           **Workflow:** ${{ github.workflow }}
           **Job:** ${{ github.job }}
-
-          [View Commit](${{ github.event.head_commit.url }})
-          [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
 
 
