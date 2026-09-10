@@ -60,7 +60,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
         status: success
         content: "✅ **Deployment Successful!** A new version deployed to production"
-        title: "Deployment Details"
+        title: "[Deployment Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
         noprefix: true
         nodetail: true
         description: |
