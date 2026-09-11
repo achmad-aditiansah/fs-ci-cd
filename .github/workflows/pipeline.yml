@@ -9,52 +9,44 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
-
-    outputs:
-      job_name: ${{ steps.set_name.outputs.name }}
-
     steps:
-    - id: set_name
-      run: echo "name=deployment_pipeline" >> $GITHUB_OUTPUT
-
     - uses: actions/checkout@v6
-    
     - uses: actions/setup-node@v6
       with:
         node-version: '24'
-    
     - name: Install dependencies
       run: npm install
-    
     - name: Check style
       run: npm run eslint
-    
     - name: Run npm test
       run: npm run test
-    
     - name: Run npm run build
       run: npm run build
-    
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    
     - name: Run Playwright tests
       run: npm run test:e2e
-    
+
+  deploy:
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
+      with:
+        node-version: '24'
     - name: Trigger deployment
       if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
       run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
-  discord_notification:
-    needs: [deployment_pipeline]
-    if: ${{ always() }}
+  notify_success:
+    needs: [deploy]
     runs-on: ubuntu-latest
-
     steps:
-    - name: Success
-      if: ${{ needs.deployment_pipeline.result == 'success' && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    - name: Success Notification
+      if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
       uses: sarisia/actions-status-discord@v1
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -68,9 +60,29 @@ jobs:
           **Commit:** ${{ github.event.head_commit.id }}
           **Message:** ${{ github.event.head_commit.message }}
           **Author:** ${{ github.event.head_commit.author.name }}
-    
-    - name: Failure
-      if: ${{ needs.deployment_pipeline.result == 'failure' }}
+
+  tag_release:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+      uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BUMP: patch
+
+  notify_failure:
+    needs: [build_and_test, deploy]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Failure Notification
       uses: sarisia/actions-status-discord@v1
       with: 
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -86,28 +98,7 @@ jobs:
           **Message:** ${{ github.event.head_commit.message || github.event.pull_request.title }}
           **Author:** ${{ github.event.head_commit.author.name || github.event.pull_request.user.login }}
           **Workflow:** ${{ github.workflow }}
-          **Job:** ${{ needs.deployment_pipeline.outputs.job_name }}
+          **Job:** ${{ needs.build_and_test.result == 'failure' && 'build_and_test' || 'deploy' }}
 
           [View Commit](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.head_commit.id || github.event.pull_request.head.sha }})
           [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-
-
-  tag_release:
-    needs: [deployment_pipeline]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: '0'
-      
-    - name: Bump version and push tag
-      if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-      uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DEFAULT_BUMP: patch
-
