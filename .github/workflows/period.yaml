@@ -14,4 +14,6 @@ jobs:
         with:
           url: |
             https://fs-ci-cd-nh5w.onrender.com
-            https://fs-ci-cd-nh5w.onrender.com/health 
+            https://fs-ci-cd-nh5w.onrender.com/health
+          max-attempts: 3
+          retry-delay: 5s
