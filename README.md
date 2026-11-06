@@ -25,3 +25,9 @@ Testing normal deployment behavior.
 The application is deployed on Render and can be accessed at:
 
 **[https://fs-ci-cd-nh5w.onrender.com](https://fs-ci-cd-nh5w.onrender.com)**
+
+## 🔗 Other Exercise Repositories
+
+The full-stack monorepo with its own pipeline (Exercise 21-22) can be accessed here:
+
+**[https://github.com/achmad-aditiansah/blogapp-cicd](https://github.com/achmad-aditiansah/blogapp-cicd)**
